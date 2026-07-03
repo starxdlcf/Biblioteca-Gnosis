@@ -1,7 +1,6 @@
-const AppError = require("./AppError");
+import { AppError } from "./AppError.js";
 
-
-function errorHandler(error, request, reply) {
+export default function errorHandler(error, request, reply) {
   if (error instanceof AppError) {
     return reply.status(error.statusCode).send({
       statusCode: error.statusCode,
@@ -9,15 +8,10 @@ function errorHandler(error, request, reply) {
     });
   }
 
-
   console.error(error);
-
 
   return reply.status(500).send({
     statusCode: 500,
     message: "Erro interno do servidor",
   });
 }
-
-
-module.exports = errorHandler;
