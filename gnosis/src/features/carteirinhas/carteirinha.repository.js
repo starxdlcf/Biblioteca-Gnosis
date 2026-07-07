@@ -1,4 +1,4 @@
-import { BaseRepository } from "../../docs/base/base.repository.js";
+import { BaseRepository } from "../../base/base.repository.js";
 
 export class CarteirinhaRepository extends BaseRepository {
   constructor() {

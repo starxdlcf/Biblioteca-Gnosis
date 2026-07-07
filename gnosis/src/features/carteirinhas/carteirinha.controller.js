@@ -1,4 +1,4 @@
-import { BaseController } from "../../docs/base/base.controller.js";
+import { BaseController } from "../../base/base.controller.js";
 
 export class CarteirinhaController extends BaseController {
   constructor(service) {

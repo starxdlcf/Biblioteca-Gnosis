@@ -1,5 +1,5 @@
 import { AppError } from "../../errors/AppError.js";
-import { BaseService } from "../../docs/base/base.service.js";
+import { BaseService } from "../../base/base.service.js";
 import { CarteirinhaRepository } from "./carteirinha.repository.js";
 
 export class CarteirinhaService extends BaseService {
