@@ -1,9 +1,9 @@
 import { BaseController } from "../../docs/base/base.controller.js";
 
-export class CarteirinhaController extends BaseController {
+export class LivroController extends BaseController {
   constructor(service) {
     super(service);
   }
 }
 
-export default CarteirinhaController;
+export default LivroController;

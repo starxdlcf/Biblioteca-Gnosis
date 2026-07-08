@@ -1,26 +1,35 @@
-### Listar carteirinhas
-GET http://localhost:3003/carteirinhas
+### Listar todos os livros
+GET http://localhost:3003/livros
 
-### Buscar uma carteirinha por ID
-GET http://localhost:3003/carteirinhas/1
+### Buscar um livro por ID
+GET http://localhost:3003/livros/1
 
-### Criar carteirinha
-POST http://localhost:3003/carteirinhas
+### Buscar livros por Autor (Ex: Busca parcial/ILIKE igual a Anna explicou!)
+GET http://localhost:3003/livros/autor/Machado
+
+### Buscar livros por Título
+GET http://localhost:3003/livros/titulo/Codigo
+
+### Buscar um livro por ISBN
+GET http://localhost:3003/livros/isbn/9788575222485
+
+### Criar um novo livro
+POST http://localhost:3003/livros
 Content-Type: application/json
 
 {
-  "nome": "Maria Silva",
-  "email": "maria@email.com",
-  "telefone": "11999999999"
+  "titulo": "Código Limpo",
+  "isbn": "9788575222485"
 }
 
-### Atualizar carteirinha
-PUT http://localhost:3003/carteirinhas/1
+### Atualizar livro (Apenas título e/ou isbn são aceitos no seu repository)
+PUT http://localhost:3003/livros/1
 Content-Type: application/json
 
 {
-  "telefone": "11888888888"
+  "titulo": "Código Limpo - Edição Revisada",
+  "isbn": "9788575222485"
 }
 
-### Deletar carteirinha
-DELETE http://localhost:3003/carteirinhas/1
+### Deletar um livro
+DELETE http://localhost:3003/livros/1

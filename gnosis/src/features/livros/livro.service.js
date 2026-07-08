@@ -1,6 +1,6 @@
 import { AppError } from "../../errors/AppError.js";
 
-export class BaseService {
+export class LivroService {
   constructor(repository) {
     this.repository = repository;
   }
@@ -9,6 +9,7 @@ export class BaseService {
     try {
       return await this.repository.findAll();
     } catch (error) {
+      console.error("❌ [BaseService - getAll] Erro original:", error);
       throw new AppError("Erro ao buscar registros", 500);
     }
   }
@@ -25,6 +26,7 @@ export class BaseService {
       }
       return data;
     } catch (error) {
+      console.error("❌ [BaseService - getById] Erro original:", error);
       if (error instanceof AppError) throw error;
       throw new AppError("Erro ao buscar registro", 500);
     }
@@ -37,6 +39,7 @@ export class BaseService {
       }
       return await this.repository.create(data);
     } catch (error) {
+      console.error("❌ [BaseService - create] Erro original:", error);
       if (error instanceof AppError) throw error;
       throw new AppError("Erro ao criar registro", 500);
     }
@@ -59,6 +62,7 @@ export class BaseService {
 
       return await this.repository.update(id, data);
     } catch (error) {
+      console.error("❌ [BaseService - update] Erro original:", error);
       if (error instanceof AppError) throw error;
       throw new AppError("Erro ao atualizar registro", 500);
     }
@@ -77,6 +81,7 @@ export class BaseService {
 
       return await this.repository.delete(id);
     } catch (error) {
+      console.error("❌ [BaseService - delete] Erro original:", error);
       if (error instanceof AppError) throw error;
       throw new AppError("Erro ao deletar registro", 500);
     }
@@ -89,6 +94,7 @@ export class BaseService {
       }
       return await this.repository.findByAuthor(author);
     } catch (error) {
+      console.error("❌ [BaseService - getByAuthor] Erro original:", error);
       if (error instanceof AppError) throw error;
       throw new AppError("Erro ao buscar livros por autor", 500);
     }
@@ -101,6 +107,7 @@ export class BaseService {
       }
       return await this.repository.findByTitle(title);
     } catch (error) {
+      console.error("❌ [BaseService - getByTitle] Erro original:", error);
       if (error instanceof AppError) throw error;
       throw new AppError("Erro ao buscar livros por título", 500);
     }
@@ -117,6 +124,7 @@ export class BaseService {
       }
       return data;
     } catch (error) {
+      console.error("❌ [BaseService - getByISBN] Erro original:", error);
       if (error instanceof AppError) throw error;
       throw new AppError("Erro ao buscar livro por ISBN", 500);
     }

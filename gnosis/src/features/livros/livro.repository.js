@@ -2,10 +2,10 @@ import { pool } from "../../config/database.js";
 
 
 
-export class BaseRepository {
-  constructor(livros, id_livro = "id") {
-    this.tableName = livros;
-    this.idField = id_livro;
+export class LivroRepository {
+  constructor() {
+    this.tableName = "livros";    
+    this.idField = "id_livro";     
     this.pool = pool;
   }
 

@@ -2,6 +2,12 @@ import { CarteirinhaController } from "../features/carteirinhas/carteirinha.cont
 import { CarteirinhaRoutes } from "../features/carteirinhas/carteirinha.routes.js";
 import { CarteirinhaService } from "../features/carteirinhas/carteirinha.service.js";
 
+// IMPORTAÇÕES DE LIVROS (Adicionei o LivroRepository aqui)
+import { LivroRepository } from "../features/livros/livro.repository.js";
+import { LivroService } from "../features/livros/livro.service.js";
+import { LivroController } from "../features/livros/livro.controller.js";
+import { LivroRoutes } from "../features/livros/livro.routes.js";
+
 export default async function routes(fastify) {
   fastify.get("/", async () => {
     return {
@@ -9,6 +15,7 @@ export default async function routes(fastify) {
       version: "1.0.0",
     };
   });
+
 
   const carteirinhaService = new CarteirinhaService();
   const carteirinhaController = new CarteirinhaController(carteirinhaService);
@@ -19,5 +26,18 @@ export default async function routes(fastify) {
       carteirinhaRoutes.register(instance);
     },
     { prefix: "/carteirinhas" }
+  );
+
+
+  const livroRepository = new LivroRepository();
+  const livroService = new LivroService(livroRepository);
+  const livroController = new LivroController(livroService);
+  const livroRoutes = new LivroRoutes(livroController);
+
+  fastify.register(
+    async (instance) => {
+      livroRoutes.register(instance);
+    },
+    { prefix: "/livros" }
   );
 }
