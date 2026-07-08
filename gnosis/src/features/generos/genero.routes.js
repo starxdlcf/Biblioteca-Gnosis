@@ -1,4 +1,4 @@
-import { BaseRoutes } from "../../docs/base/base.routes.js";
+import { BaseRoutes } from "../../base/base.routes.js";
 
 export class GeneroRoutes extends BaseRoutes {
   register(fastify) {

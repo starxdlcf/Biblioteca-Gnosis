@@ -1,10 +1,7 @@
 import { AppError } from "../../errors/AppError.js";
 
-/**
- * BaseService - Responsável por lógica de negócio, validações e regras
- * Aqui ficam os AppErrors específicos de negócio
- */
-export class BaseService {
+
+export class GeneroService {
   constructor(repository) {
     this.repository = repository;
   }
@@ -74,14 +71,28 @@ export class BaseService {
         throw new AppError("ID é obrigatório", 400);
       }
 
+      // 1. Verifica se o gênero existe
       const existing = await this.repository.findById(id);
       if (!existing) {
         throw new AppError("Registro não encontrado", 404);
       }
 
+      // 2. NOVA REGRA: Verifica se existem livros vinculados na tabela livro_genero
+      const livrosVinculados = await this.repository.countLivrosPorGenero(id);
+      
+      if (livrosVinculados > 0) {
+        throw new AppError(
+          `Não é possível excluir. Existem ${livrosVinculados} livro(s) vinculado(s) a este gênero.`, 
+          409 // 409 Conflict: a requisição conflita com o estado atual do servidor
+        );
+      }
+
+      // 3. Se passou pelas checagens, deleta em paz
       return await this.repository.delete(id);
+      
     } catch (error) {
       if (error instanceof AppError) throw error;
+      console.error("❌ [GeneroService - delete] Erro original:", error);
       throw new AppError("Erro ao deletar registro", 500);
     }
   }

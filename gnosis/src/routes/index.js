@@ -11,6 +11,10 @@ import { LivroRepository } from "../features/livros/livro.repository.js";
 import { LivroService } from "../features/livros/livro.service.js";
 import { LivroController } from "../features/livros/livro.controller.js";
 import { LivroRoutes } from "../features/livros/livro.routes.js";
+import { GeneroController } from "../features/generos/genero.controller.js";
+import { GeneroRoutes } from "../features/generos/genero.routes.js";
+import { GeneroService } from "../features/generos/genero.service.js";
+import { GeneroRepository } from "../features/generos/genero.repository.js";
 
 export default async function routes(fastify) {
   fastify.get("/", async () => {
@@ -32,7 +36,6 @@ export default async function routes(fastify) {
     { prefix: "/carteirinhas" }
   );
 
-
   const livroRepository = new LivroRepository();
   const livroService = new LivroService(livroRepository);
   const livroController = new LivroController(livroService);
@@ -44,7 +47,7 @@ export default async function routes(fastify) {
     },
     { prefix: "/livros" }
   );
-}
+
   const emprestimoService = new EmprestimoService();
   const emprestimoController = new EmprestimoController(emprestimoService);
   const emprestimoRoutes = new EmprestimoRoutes(emprestimoController);
@@ -66,4 +69,20 @@ export default async function routes(fastify) {
     },
     { prefix: "/multas" }
   );
+
+  const generoRepository = new GeneroRepository();
+  const generoService = new GeneroService(generoRepository);
+  const generoController = new GeneroController(generoService);
+  const generoRoutes = new GeneroRoutes(generoController);
+
+
+  fastify.register(
+    async (instance) => {
+      generoRoutes.register(instance);
+    },
+    { prefix: "/generos"}
+  );
+
+
 }
+  
