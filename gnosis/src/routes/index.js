@@ -7,6 +7,9 @@ import { EmprestimoService } from "../features/emprestimos/emprestimo.service.js
 import { MultaController } from "../features/multas/multa.controller.js";
 import { MultaRoutes } from "../features/multas/multa.routes.js";
 import { MultaService } from "../features/multas/multa.service.js";
+import { AutorController } from "../features/autores/autor.controller.js";
+import { AutorRoutes } from "../features/autores/autor.routes.js";
+import { AutorService } from "../features/autores/autor.service.js";
 import { LivroRepository } from "../features/livros/livro.repository.js";
 import { LivroService } from "../features/livros/livro.service.js";
 import { LivroController } from "../features/livros/livro.controller.js";
@@ -44,7 +47,18 @@ export default async function routes(fastify) {
     },
     { prefix: "/livros" }
   );
-}
+
+  const autorService = new AutorService();
+  const autorController = new AutorController(autorService);
+  const autorRoutes = new AutorRoutes(autorController);
+
+  fastify.register(
+    async (instance) => {
+      autorRoutes.register(instance);
+    },
+    { prefix: "/autores" }
+  );
+
   const emprestimoService = new EmprestimoService();
   const emprestimoController = new EmprestimoController(emprestimoService);
   const emprestimoRoutes = new EmprestimoRoutes(emprestimoController);

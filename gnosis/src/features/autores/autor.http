@@ -1,0 +1,21 @@
+### Listar autores
+GET http://localhost:3002/autores
+
+### Buscar um autor por ID
+GET http://localhost:3002/autores/1
+
+### Criar autor
+POST http://localhost:3002/autores
+Content-Type: application/json
+
+{
+  "nome": "Machado de Assis"
+}
+
+### Atualizar autor
+PUT http://localhost:3002/autores/1
+Content-Type: application/json
+
+{
+  "nome": "Joaquim Maria Machado de Assis"
+}
