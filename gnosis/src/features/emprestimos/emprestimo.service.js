@@ -8,7 +8,6 @@ const ALLOWED_FIELDS = new Set([
   "id_livro",
   "data_emprestimo",
   "data_devolucao_prevista",
-  "data_devolucao_real",
 ]);
 
 const UPDATE_ALLOWED_FIELDS = new Set([
@@ -47,23 +46,27 @@ export class EmprestimoService extends BaseService {
   }
 
   async create(data) {
-    if (!data || typeof data !== "object") {
-      throw new AppError("Dados obrigatórios não fornecidos", 400);
+    if (!data || typeof data !== "object" || Array.isArray(data)) {
+      throw new AppError("Dados obrigatorios nao fornecidos", 400);
+    }
+
+    if (Object.prototype.hasOwnProperty.call(data, "data_devolucao_real")) {
+      throw new AppError("data_devolucao_real deve ser preenchida automaticamente pelo sistema", 400);
     }
 
     const payload = this.buildPayload(data);
 
     if (payload.id_carteirinha === undefined) {
-      throw new AppError("id_carteirinha é obrigatório", 400);
+      throw new AppError("id_carteirinha e obrigatorio", 400);
     }
 
     if (payload.id_livro === undefined) {
-      throw new AppError("id_livro é obrigatório", 400);
+      throw new AppError("id_livro e obrigatorio", 400);
     }
 
     const carteirinha = await this.repository.findCarteirinhaById(payload.id_carteirinha);
     if (!carteirinha) {
-      throw new AppError("Carteirinha não encontrada", 404);
+      throw new AppError("Carteirinha nao encontrada", 404);
     }
 
     const possuiMultaPendente = await this.multaRepository.existsPendingByCarteirinha(
@@ -71,48 +74,62 @@ export class EmprestimoService extends BaseService {
     );
     if (possuiMultaPendente) {
       throw new AppError(
-        "A carteirinha possui multas pendentes e não pode realizar novos empréstimos.",
+        "A carteirinha possui multas pendentes e nao pode realizar novos emprestimos.",
         400
       );
     }
 
     const livro = await this.repository.findLivroById(payload.id_livro);
     if (!livro) {
-      throw new AppError("Livro não encontrado", 404);
+      throw new AppError("Livro nao encontrado", 404);
     }
 
     return super.create(payload);
   }
 
   async update(id, data = {}) {
-    if (!data || typeof data !== "object") {
-      throw new AppError("Dados para atualização inválidos", 400);
+    if (!data || typeof data !== "object" || Array.isArray(data)) {
+      throw new AppError("Dados para atualizacao invalidos", 400);
     }
 
     if (Object.prototype.hasOwnProperty.call(data, "data_devolucao_real")) {
       throw new AppError("data_devolucao_real deve ser preenchida automaticamente pelo sistema", 400);
     }
 
+    const shouldReturn = Object.prototype.hasOwnProperty.call(data, "devolver");
+    if (shouldReturn && data.devolver !== true) {
+      throw new AppError("devolver deve ser true para registrar a devolucao", 400);
+    }
+
     const payload = this.buildPayload(data, UPDATE_ALLOWED_FIELDS);
+
+    if (Object.keys(payload).length === 0 && !shouldReturn) {
+      throw new AppError("Dados para atualizacao nao fornecidos", 400);
+    }
 
     if (payload.id_carteirinha !== undefined) {
       const carteirinha = await this.repository.findCarteirinhaById(payload.id_carteirinha);
       if (!carteirinha) {
-        throw new AppError("Carteirinha não encontrada", 404);
+        throw new AppError("Carteirinha nao encontrada", 404);
       }
     }
 
     if (payload.id_livro !== undefined) {
       const livro = await this.repository.findLivroById(payload.id_livro);
       if (!livro) {
-        throw new AppError("Livro não encontrado", 404);
+        throw new AppError("Livro nao encontrado", 404);
       }
     }
 
-    payload.data_devolucao_real = this.getCurrentDate();
+    if (shouldReturn) {
+      payload.data_devolucao_real = this.getCurrentDate();
+    }
 
     const emprestimoAtualizado = await super.update(id, payload);
-    await this.createMultaIfLate(emprestimoAtualizado);
+
+    if (shouldReturn) {
+      await this.createMultaIfLate(emprestimoAtualizado);
+    }
 
     return emprestimoAtualizado;
   }
@@ -176,7 +193,7 @@ export class EmprestimoService extends BaseService {
     const numericValue = Number(value);
 
     if (!Number.isInteger(numericValue) || numericValue <= 0) {
-      throw new AppError(`${fieldName} inválido`, 400);
+      throw new AppError(`${fieldName} invalido`, 400);
     }
 
     return numericValue;
@@ -186,12 +203,12 @@ export class EmprestimoService extends BaseService {
     if (typeof value === "string") {
       const trimmedValue = value.trim();
       if (!trimmedValue) {
-        throw new AppError(`${fieldName} não pode ser vazio`, 400);
+        throw new AppError(`${fieldName} nao pode ser vazio`, 400);
       }
 
       const parsedDate = new Date(trimmedValue);
       if (Number.isNaN(parsedDate.getTime())) {
-        throw new AppError(`${fieldName} inválida`, 400);
+        throw new AppError(`${fieldName} invalida`, 400);
       }
 
       return parsedDate.toISOString().slice(0, 10);
@@ -199,12 +216,12 @@ export class EmprestimoService extends BaseService {
 
     if (value instanceof Date) {
       if (Number.isNaN(value.getTime())) {
-        throw new AppError(`${fieldName} inválida`, 400);
+        throw new AppError(`${fieldName} invalida`, 400);
       }
       return value.toISOString().slice(0, 10);
     }
 
-    throw new AppError(`${fieldName} inválida`, 400);
+    throw new AppError(`${fieldName} invalida`, 400);
   }
 
   getCurrentDate() {
