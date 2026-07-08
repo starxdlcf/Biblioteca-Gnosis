@@ -1,11 +1,11 @@
 ### Listar todos os gêneros
-GET http://localhost:3003/generos
+GET http://localhost:3002/generos
 
 ### Buscar um gênero por ID
-GET http://localhost:3003/generos/1
+GET http://localhost:3002/generos/1
 
 ### Criar um novo gênero
-POST http://localhost:3003/generos
+POST http://localhost:3002/generos
 Content-Type: application/json
 
 {
@@ -13,7 +13,7 @@ Content-Type: application/json
 }
 
 ### Atualizar gênero
-PUT http://localhost:3003/generos/1
+PUT http://localhost:3002/generos/1
 Content-Type: application/json
 
 {
@@ -21,4 +21,4 @@ Content-Type: application/json
 }
 
 ### Deletar um gênero
-DELETE http://localhost:3003/generos/6
+DELETE http://localhost:3002/generos/6

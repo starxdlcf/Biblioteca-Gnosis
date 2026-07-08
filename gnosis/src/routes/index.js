@@ -15,6 +15,12 @@ import { GeneroController } from "../features/generos/genero.controller.js";
 import { GeneroRoutes } from "../features/generos/genero.routes.js";
 import { GeneroService } from "../features/generos/genero.service.js";
 import { GeneroRepository } from "../features/generos/genero.repository.js";
+import { LivroGeneroController } from "../features/livro_genero/livroGenero.controller.js";
+import { LivroGeneroRoutes } from "../features/livro_genero/livroGenero.routes.js";
+import { LivroGeneroService } from "../features/livro_genero/livroGenero.service.js";
+import { LivroGeneroRepository} from "../features/livro_genero/livroGenero.repository.js";
+
+
 
 export default async function routes(fastify) {
   fastify.get("/", async () => {
@@ -83,6 +89,20 @@ export default async function routes(fastify) {
     { prefix: "/generos"}
   );
 
+
+  const livrogeneroRepository = new LivroGeneroRepository();
+  const livrogeneroService = new LivroGeneroService(livrogeneroRepository);
+  const livrogeneroController = new LivroGeneroController(livrogeneroService);
+  const livrogeneroRoutes = new LivroGeneroRoutes(livrogeneroController);
+
+
+  fastify.register(
+    async (instance) => {
+      livrogeneroRoutes.register(instance);
+    },
+    { prefix: "/livrogenero"}
+  );
+  
 
 }
   
