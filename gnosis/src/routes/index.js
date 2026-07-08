@@ -4,6 +4,10 @@ import { CarteirinhaService } from "../features/carteirinhas/carteirinha.service
 import { EmprestimoController } from "../features/emprestimos/emprestimo.controller.js";
 import { EmprestimoRoutes } from "../features/emprestimos/emprestimo.routes.js";
 import { EmprestimoService } from "../features/emprestimos/emprestimo.service.js";
+import { LivroRepository } from "../features/livros/livro.repository.js";
+import { LivroService } from "../features/livros/livro.service.js";
+import { LivroController } from "../features/livros/livro.controller.js";
+import { LivroRoutes } from "../features/livros/livro.routes.js";
 
 export default async function routes(fastify) {
   fastify.get("/", async () => {
@@ -12,6 +16,7 @@ export default async function routes(fastify) {
       version: "1.0.0",
     };
   });
+
 
   const carteirinhaService = new CarteirinhaService();
   const carteirinhaController = new CarteirinhaController(carteirinhaService);
@@ -24,6 +29,19 @@ export default async function routes(fastify) {
     { prefix: "/carteirinhas" }
   );
 
+
+  const livroRepository = new LivroRepository();
+  const livroService = new LivroService(livroRepository);
+  const livroController = new LivroController(livroService);
+  const livroRoutes = new LivroRoutes(livroController);
+
+  fastify.register(
+    async (instance) => {
+      livroRoutes.register(instance);
+    },
+    { prefix: "/livros" }
+  );
+}
   const emprestimoService = new EmprestimoService();
   const emprestimoController = new EmprestimoController(emprestimoService);
   const emprestimoRoutes = new EmprestimoRoutes(emprestimoController);
