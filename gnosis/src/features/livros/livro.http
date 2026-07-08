@@ -1,0 +1,26 @@
+### Listar carteirinhas
+GET http://localhost:3003/carteirinhas
+
+### Buscar uma carteirinha por ID
+GET http://localhost:3003/carteirinhas/1
+
+### Criar carteirinha
+POST http://localhost:3003/carteirinhas
+Content-Type: application/json
+
+{
+  "nome": "Maria Silva",
+  "email": "maria@email.com",
+  "telefone": "11999999999"
+}
+
+### Atualizar carteirinha
+PUT http://localhost:3003/carteirinhas/1
+Content-Type: application/json
+
+{
+  "telefone": "11888888888"
+}
+
+### Deletar carteirinha
+DELETE http://localhost:3003/carteirinhas/1
