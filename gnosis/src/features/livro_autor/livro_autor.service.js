@@ -98,6 +98,23 @@ export class LivroAutorService extends BaseService {
     return await this.repository.update(this.formatCompositeId(currentId), payload);
   }
 
+  async delete(id) {
+    try {
+      const compositeId = this.parseCompositeId(id);
+      const formattedId = this.formatCompositeId(compositeId);
+      const existing = await this.repository.findById(formattedId);
+
+      if (!existing) {
+        throw new AppError("Vinculo livro-autor nao encontrado", 404);
+      }
+
+      return await this.repository.delete(formattedId);
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError("Erro ao deletar vinculo livro-autor", 500);
+    }
+  }
+
   buildFilterPayload(filters) {
     const payload = {};
 

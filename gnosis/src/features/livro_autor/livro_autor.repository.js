@@ -32,6 +32,16 @@ export class LivroAutorRepository extends BaseRepository {
     return result.rows[0];
   }
 
+  async delete(id) {
+    const { id_livro, id_autor } = this.parseCompositeId(id);
+
+    const result = await this.pool.query(
+      "DELETE FROM livro_autor WHERE id_livro = $1 AND id_autor = $2 RETURNING *",
+      [id_livro, id_autor]
+    );
+    return result.rows[0];
+  }
+
   async findLivroById(id_livro) {
     const result = await this.pool.query(
       "SELECT id_livro FROM livros WHERE id_livro = $1",
@@ -54,6 +64,14 @@ export class LivroAutorRepository extends BaseRepository {
       [id_livro, id_autor]
     );
     return result.rows[0];
+  }
+
+  async existsByAutor(id_autor) {
+    const result = await this.pool.query(
+      "SELECT 1 FROM livro_autor WHERE id_autor = $1 LIMIT 1",
+      [id_autor]
+    );
+    return result.rowCount > 0;
   }
 
   async findByFilters(filters) {

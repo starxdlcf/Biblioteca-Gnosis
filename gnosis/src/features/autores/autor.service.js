@@ -1,12 +1,14 @@
 import { AppError } from "../../errors/AppError.js";
 import { BaseService } from "../../base/base.service.js";
 import { AutorRepository } from "./autor.repository.js";
+import { LivroAutorRepository } from "../livro_autor/livro_autor.repository.js";
 
 const ALLOWED_FIELDS = new Set(["nome"]);
 
 export class AutorService extends BaseService {
-  constructor(repository = new AutorRepository()) {
+  constructor(repository = new AutorRepository(), livroAutorRepository = new LivroAutorRepository()) {
     super(repository);
+    this.livroAutorRepository = livroAutorRepository;
   }
 
   async create(data) {
@@ -39,6 +41,32 @@ export class AutorService extends BaseService {
     }
 
     return super.update(id, payload);
+  }
+
+  async delete(id) {
+    try {
+      if (!id) {
+        throw new AppError("ID e obrigatorio", 400);
+      }
+
+      const existing = await this.repository.findById(id);
+      if (!existing) {
+        throw new AppError("Registro nao encontrado", 404);
+      }
+
+      const hasLinkedBooks = await this.livroAutorRepository.existsByAutor(id);
+      if (hasLinkedBooks) {
+        throw new AppError(
+          "Não é possível excluir o autor, pois existem livros vinculados a ele.",
+          400
+        );
+      }
+
+      return await this.repository.delete(id);
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError("Erro ao deletar registro", 500);
+    }
   }
 
   buildPayload(data) {

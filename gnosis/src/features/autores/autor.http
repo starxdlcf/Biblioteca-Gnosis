@@ -19,3 +19,6 @@ Content-Type: application/json
 {
   "nome": "Joaquim Maria Machado de Assis"
 }
+
+### Deletar autor
+DELETE http://localhost:3002/autores/1

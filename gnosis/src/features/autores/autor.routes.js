@@ -17,6 +17,10 @@ export class AutorRoutes extends BaseRoutes {
     fastify.put("/:id", async (request, reply) =>
       this.controller.update(request, reply)
     );
+
+    fastify.delete("/:id", async (request, reply) =>
+      this.controller.delete(request, reply)
+    );
   }
 }
 
