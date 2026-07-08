@@ -10,9 +10,38 @@ const ALLOWED_FIELDS = new Set([
   "data_devolucao_real",
 ]);
 
+const UPDATE_ALLOWED_FIELDS = new Set([
+  "id_carteirinha",
+  "id_livro",
+  "data_emprestimo",
+  "data_devolucao_prevista",
+]);
+
+const ALLOWED_FILTERS = new Set([
+  "id_emprestimo",
+  "id_livro",
+  "id_carteirinha",
+  "data_devolucao_prevista",
+]);
+
 export class EmprestimoService extends BaseService {
   constructor(repository = new EmprestimoRepository()) {
     super(repository);
+  }
+
+  async getAll(filters = {}) {
+    try {
+      const payload = this.buildFilterPayload(filters);
+
+      if (Object.keys(payload).length === 0) {
+        return await this.repository.findAll();
+      }
+
+      return await this.repository.findByFilters(payload);
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError("Erro ao buscar registros", 500);
+    }
   }
 
   async create(data) {
@@ -43,16 +72,16 @@ export class EmprestimoService extends BaseService {
     return super.create(payload);
   }
 
-  async update(id, data) {
+  async update(id, data = {}) {
     if (!data || typeof data !== "object") {
-      throw new AppError("Dados para atualização não fornecidos", 400);
+      throw new AppError("Dados para atualização inválidos", 400);
     }
 
-    const payload = this.buildPayload(data);
-
-    if (Object.keys(payload).length === 0) {
-      throw new AppError("Dados para atualização não fornecidos", 400);
+    if (Object.prototype.hasOwnProperty.call(data, "data_devolucao_real")) {
+      throw new AppError("data_devolucao_real deve ser preenchida automaticamente pelo sistema", 400);
     }
+
+    const payload = this.buildPayload(data, UPDATE_ALLOWED_FIELDS);
 
     if (payload.id_carteirinha !== undefined) {
       const carteirinha = await this.repository.findCarteirinhaById(payload.id_carteirinha);
@@ -68,14 +97,43 @@ export class EmprestimoService extends BaseService {
       }
     }
 
+    payload.data_devolucao_real = this.getCurrentDate();
+
     return super.update(id, payload);
   }
 
-  buildPayload(data) {
+  buildFilterPayload(filters) {
+    const payload = {};
+
+    if (!filters || typeof filters !== "object") {
+      return payload;
+    }
+
+    for (const [key, value] of Object.entries(filters)) {
+      if (!ALLOWED_FILTERS.has(key) || value === undefined) {
+        continue;
+      }
+
+      if (value === null || value === "") {
+        continue;
+      }
+
+      if (key === "id_emprestimo" || key === "id_carteirinha" || key === "id_livro") {
+        payload[key] = this.normalizeInteger(value, key);
+        continue;
+      }
+
+      payload[key] = this.normalizeDate(value, key);
+    }
+
+    return payload;
+  }
+
+  buildPayload(data, allowedFields = ALLOWED_FIELDS) {
     const payload = {};
 
     for (const [key, value] of Object.entries(data)) {
-      if (!ALLOWED_FIELDS.has(key)) {
+      if (!allowedFields.has(key)) {
         continue;
       }
 
@@ -132,6 +190,10 @@ export class EmprestimoService extends BaseService {
     }
 
     throw new AppError(`${fieldName} inválida`, 400);
+  }
+
+  getCurrentDate() {
+    return new Date().toISOString().slice(0, 10);
   }
 }
 

@@ -20,6 +20,20 @@ export class EmprestimoRepository extends BaseRepository {
     );
     return result.rows[0];
   }
+
+  async findByFilters(filters) {
+    const columns = Object.keys(filters);
+    const values = Object.values(filters);
+    const whereClause = columns
+      .map((column, index) => `${column} = $${index + 1}`)
+      .join(" AND ");
+
+    const result = await this.pool.query(
+      `SELECT * FROM emprestimos WHERE ${whereClause}`,
+      values
+    );
+    return result.rows;
+  }
 }
 
 export default EmprestimoRepository;
