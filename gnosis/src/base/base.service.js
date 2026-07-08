@@ -1,4 +1,4 @@
-import { AppError } from "../../errors/AppError.js";
+import { AppError } from "../errors/AppError.js";
 
 /**
  * BaseService - Responsável por lógica de negócio, validações e regras

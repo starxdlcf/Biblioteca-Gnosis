@@ -1,8 +1,9 @@
 import { CarteirinhaController } from "../features/carteirinhas/carteirinha.controller.js";
 import { CarteirinhaRoutes } from "../features/carteirinhas/carteirinha.routes.js";
 import { CarteirinhaService } from "../features/carteirinhas/carteirinha.service.js";
-
-// IMPORTAÇÕES DE LIVROS (Adicionei o LivroRepository aqui)
+import { EmprestimoController } from "../features/emprestimos/emprestimo.controller.js";
+import { EmprestimoRoutes } from "../features/emprestimos/emprestimo.routes.js";
+import { EmprestimoService } from "../features/emprestimos/emprestimo.service.js";
 import { LivroRepository } from "../features/livros/livro.repository.js";
 import { LivroService } from "../features/livros/livro.service.js";
 import { LivroController } from "../features/livros/livro.controller.js";
@@ -39,5 +40,16 @@ export default async function routes(fastify) {
       livroRoutes.register(instance);
     },
     { prefix: "/livros" }
+  );
+}
+  const emprestimoService = new EmprestimoService();
+  const emprestimoController = new EmprestimoController(emprestimoService);
+  const emprestimoRoutes = new EmprestimoRoutes(emprestimoController);
+
+  fastify.register(
+    async (instance) => {
+      emprestimoRoutes.register(instance);
+    },
+    { prefix: "/emprestimos" }
   );
 }
