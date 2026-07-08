@@ -1,6 +1,7 @@
 import { AppError } from "../../errors/AppError.js";
 import { BaseService } from "../../base/base.service.js";
 import { EmprestimoRepository } from "./emprestimo.repository.js";
+import { MultaRepository } from "../multas/multa.repository.js";
 
 const ALLOWED_FIELDS = new Set([
   "id_carteirinha",
@@ -25,8 +26,9 @@ const ALLOWED_FILTERS = new Set([
 ]);
 
 export class EmprestimoService extends BaseService {
-  constructor(repository = new EmprestimoRepository()) {
+  constructor(repository = new EmprestimoRepository(), multaRepository = new MultaRepository()) {
     super(repository);
+    this.multaRepository = multaRepository;
   }
 
   async getAll(filters = {}) {
@@ -64,6 +66,16 @@ export class EmprestimoService extends BaseService {
       throw new AppError("Carteirinha não encontrada", 404);
     }
 
+    const possuiMultaPendente = await this.multaRepository.existsPendingByCarteirinha(
+      payload.id_carteirinha
+    );
+    if (possuiMultaPendente) {
+      throw new AppError(
+        "A carteirinha possui multas pendentes e não pode realizar novos empréstimos.",
+        400
+      );
+    }
+
     const livro = await this.repository.findLivroById(payload.id_livro);
     if (!livro) {
       throw new AppError("Livro não encontrado", 404);
@@ -99,7 +111,10 @@ export class EmprestimoService extends BaseService {
 
     payload.data_devolucao_real = this.getCurrentDate();
 
-    return super.update(id, payload);
+    const emprestimoAtualizado = await super.update(id, payload);
+    await this.createMultaIfLate(emprestimoAtualizado);
+
+    return emprestimoAtualizado;
   }
 
   buildFilterPayload(filters) {
@@ -194,6 +209,46 @@ export class EmprestimoService extends BaseService {
 
   getCurrentDate() {
     return new Date().toISOString().slice(0, 10);
+  }
+
+  async createMultaIfLate(emprestimo) {
+    const diasAtraso = this.calculateDiasAtraso(
+      emprestimo.data_devolucao_prevista,
+      emprestimo.data_devolucao_real
+    );
+
+    if (diasAtraso <= 0) {
+      return;
+    }
+
+    const multaExistente = await this.multaRepository.findByEmprestimoId(
+      emprestimo.id_emprestimo
+    );
+    if (multaExistente) {
+      return;
+    }
+
+    await this.multaRepository.create({
+      id_emprestimo: emprestimo.id_emprestimo,
+      dias_atraso: diasAtraso,
+      valor_total: diasAtraso,
+      pago: false,
+    });
+  }
+
+  calculateDiasAtraso(dataPrevista, dataReal) {
+    const prevista = this.getUtcDateOnly(dataPrevista, "data_devolucao_prevista");
+    const real = this.getUtcDateOnly(dataReal, "data_devolucao_real");
+    const millisecondsPerDay = 24 * 60 * 60 * 1000;
+
+    return Math.floor((real - prevista) / millisecondsPerDay);
+  }
+
+  getUtcDateOnly(value, fieldName) {
+    const normalizedDate = this.normalizeDate(value, fieldName);
+    const [year, month, day] = normalizedDate.split("-").map(Number);
+
+    return Date.UTC(year, month - 1, day);
   }
 }
 

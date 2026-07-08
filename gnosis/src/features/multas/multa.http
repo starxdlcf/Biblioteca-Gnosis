@@ -1,0 +1,32 @@
+### Listar multas
+GET http://localhost:3002/multas
+
+### Buscar uma multa por ID
+GET http://localhost:3002/multas/1
+
+### Filtrar multas por ID
+GET http://localhost:3002/multas?id_multa=1
+
+### Filtrar multas por emprestimo
+GET http://localhost:3002/multas?id_emprestimo=1
+
+### Filtrar multas por pagamento
+GET http://localhost:3002/multas?pago=false
+
+### Criar multa
+POST http://localhost:3002/multas
+Content-Type: application/json
+
+{
+  "id_emprestimo": 1,
+  "dias_atraso": 3,
+  "pago": false
+}
+
+### Atualizar multa
+PUT http://localhost:3002/multas/1
+Content-Type: application/json
+
+{
+  "pago": true
+}

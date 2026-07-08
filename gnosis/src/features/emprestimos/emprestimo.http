@@ -1,0 +1,32 @@
+### Listar emprestimos
+GET http://localhost:3002/emprestimos
+
+### Buscar um emprestimo por ID
+GET http://localhost:3002/emprestimos/1
+
+### Filtrar emprestimos por carteirinha
+GET http://localhost:3002/emprestimos?id_carteirinha=1
+
+### Filtrar emprestimos por livro
+GET http://localhost:3002/emprestimos?id_livro=1
+
+### Filtrar emprestimos por data de devolucao prevista
+GET http://localhost:3002/emprestimos?data_devolucao_prevista=2026-07-18
+
+### Criar emprestimo
+POST http://localhost:3002/emprestimos
+Content-Type: application/json
+
+{
+  "id_carteirinha": 1,
+  "id_livro": 1,
+  "data_devolucao_prevista": "2026-07-18"
+}
+
+### Atualizar emprestimo
+PUT http://localhost:3002/emprestimos/1
+Content-Type: application/json
+
+{
+  "id_livro": 1
+}
