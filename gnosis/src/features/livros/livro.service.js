@@ -1,5 +1,7 @@
 import { AppError } from "../../errors/AppError.js";
 
+const ALLOWED_FIELDS = new Set(["titulo", "isbn"]);
+
 export class LivroService {
   constructor(repository) {
     this.repository = repository;
@@ -34,10 +36,21 @@ export class LivroService {
 
   async create(data) {
     try {
-      if (!data || Object.keys(data).length === 0) {
-        throw new AppError("Dados obrigatórios não fornecidos", 400);
+      if (!data || typeof data !== "object" || Array.isArray(data)) {
+        throw new AppError("Dados obrigatorios nao fornecidos", 400);
       }
-      return await this.repository.create(data);
+
+      const payload = this.buildPayload(data);
+
+      if (!payload.titulo) {
+        throw new AppError("Titulo e obrigatorio", 400);
+      }
+
+      if (!payload.isbn) {
+        throw new AppError("ISBN e obrigatorio", 400);
+      }
+
+      return await this.repository.create(payload);
     } catch (error) {
       console.error("❌ [BaseService - create] Erro original:", error);
       if (error instanceof AppError) throw error;
@@ -48,11 +61,15 @@ export class LivroService {
   async update(id, data) {
     try {
       if (!id) {
-        throw new AppError("ID é obrigatório", 400);
+        throw new AppError("ID e obrigatorio", 400);
       }
 
-      if (!data || Object.keys(data).length === 0) {
-        throw new AppError("Dados para atualização não fornecidos", 400);
+      if (!data || typeof data !== "object" || Array.isArray(data)) {
+        throw new AppError("Dados para atualizacao nao fornecidos", 400);
+      }
+
+      if (Object.keys(data).length === 0) {
+        throw new AppError("Dados para atualizacao nao fornecidos", 400);
       }
 
       const existing = await this.repository.findById(id);
@@ -60,7 +77,9 @@ export class LivroService {
         throw new AppError("Registro não encontrado", 404);
       }
 
-      return await this.repository.update(id, data);
+      const payload = this.buildPayload(data);
+
+      return await this.repository.update(id, payload);
     } catch (error) {
       console.error("❌ [BaseService - update] Erro original:", error);
       if (error instanceof AppError) throw error;
@@ -87,46 +106,26 @@ export class LivroService {
     }
   }
 
-  async getByAuthor(author) {
-    try {
-      if (!author) {
-        throw new AppError("O nome do autor é obrigatório para a busca", 400);
-      }
-      return await this.repository.findByAuthor(author);
-    } catch (error) {
-      console.error("❌ [BaseService - getByAuthor] Erro original:", error);
-      if (error instanceof AppError) throw error;
-      throw new AppError("Erro ao buscar livros por autor", 500);
-    }
-  }
+  buildPayload(data) {
+    const payload = {};
 
-  async getByTitle(title) {
-    try {
-      if (!title) {
-        throw new AppError("O título é obrigatório para a busca", 400);
+    for (const [key, value] of Object.entries(data)) {
+      if (!ALLOWED_FIELDS.has(key)) {
+        throw new AppError(`Campo nao permitido: ${key}`, 400);
       }
-      return await this.repository.findByTitle(title);
-    } catch (error) {
-      console.error("❌ [BaseService - getByTitle] Erro original:", error);
-      if (error instanceof AppError) throw error;
-      throw new AppError("Erro ao buscar livros por título", 500);
-    }
-  }
 
-  async getByISBN(isbn) {
-    try {
-      if (!isbn) {
-        throw new AppError("O ISBN é obrigatório para a busca", 400);
+      const normalizedValue = value?.toString().trim();
+      if (!normalizedValue) {
+        if (key === "titulo") {
+          throw new AppError("Titulo e obrigatorio", 400);
+        }
+
+        throw new AppError("ISBN e obrigatorio", 400);
       }
-      const data = await this.repository.findByISBN(isbn);
-      if (!data) {
-        throw new AppError("Livro com este ISBN não foi encontrado", 404);
-      }
-      return data;
-    } catch (error) {
-      console.error("❌ [BaseService - getByISBN] Erro original:", error);
-      if (error instanceof AppError) throw error;
-      throw new AppError("Erro ao buscar livro por ISBN", 500);
+
+      payload[key] = normalizedValue;
     }
+
+    return payload;
   }
 }

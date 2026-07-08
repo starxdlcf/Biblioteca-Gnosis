@@ -1,11 +1,9 @@
 import { pool } from "../../config/database.js";
 
-
-
 export class LivroRepository {
   constructor() {
-    this.tableName = "livros";    
-    this.idField = "id_livro";     
+    this.tableName = "livros";
+    this.idField = "id_livro";
     this.pool = pool;
   }
 
@@ -35,13 +33,7 @@ export class LivroRepository {
   }
 
   async update(id, data) {
-    const allowedFields = ["titulo", "isbn"];
-    const columns = Object.keys(data).filter((col) => allowedFields.includes(col));
-
-    if (columns.length === 0) {
-      throw new Error("Nenhum campo válido para atualizar");
-    }
-
+    const columns = Object.keys(data);
     const values = columns.map((col) => data[col]);
     const setClause = columns.map((col, i) => `${col} = $${i + 1}`).join(", ");
 
@@ -56,34 +48,6 @@ export class LivroRepository {
     const result = await this.pool.query(
       `DELETE FROM ${this.tableName} WHERE ${this.idField} = $1 RETURNING *`,
       [id]
-    );
-    return result.rows[0];
-  }
-
-  async findByAuthor(author) {
-    const search = `%${author}%`;
-    const result = await this.pool.query(
-      `SELECT * FROM ${this.tableName} WHERE autor ILIKE $1`,
-      // o ILIKE é pra ignorar maiúscula e minúscula e o % serve pra buscar qualquer parte do nome do autor ou titulo ou enfim, então se a pessoa buscar Machado, encontra o machado de assis e por aí vai (comentei pq n sei se vc sabe, Ryan, dai te poupa pesquisar) - Anna
-      [search]
-    );
-    return result.rows;
-  }
-
-  async findByTitle(title) {
-    const search = `%${title}%`;
-    const result = await this.pool.query(
-      `SELECT * FROM ${this.tableName} WHERE titulo ILIKE $1`,
-      [search]
-    );
-    return result.rows;
-  }
-
-  async findByISBN(isbn) {
-    const search = `%${isbn}%`;
-    const result = await this.pool.query(
-      `SELECT * FROM ${this.tableName} WHERE isbn ILIKE $1`,
-      [search]
     );
     return result.rows[0];
   }
