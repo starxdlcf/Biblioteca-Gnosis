@@ -21,6 +21,19 @@ export class MultaRepository extends BaseRepository {
     return result.rows[0];
   }
 
+  async existsPendingByCarteirinha(id_carteirinha) {
+    const result = await this.pool.query(
+      `SELECT 1
+       FROM emprestimos e
+       JOIN multas m ON m.id_emprestimo = e.id_emprestimo
+       WHERE e.id_carteirinha = $1
+         AND m.pago = false
+       LIMIT 1`,
+      [id_carteirinha]
+    );
+    return result.rowCount > 0;
+  }
+
   async findByFilters(filters) {
     const columns = Object.keys(filters);
     const values = Object.values(filters);
