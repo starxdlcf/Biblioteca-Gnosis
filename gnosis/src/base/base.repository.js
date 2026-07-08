@@ -1,4 +1,4 @@
-import { pool } from "../../config/database.js";
+import { pool } from "../config/database.js";
 
 /**
  * BaseRepository - Responsável apenas por operações SQL e acesso aos dados
