@@ -1,0 +1,24 @@
+### Listar todos os gêneros
+GET http://localhost:3003/generos
+
+### Buscar um gênero por ID
+GET http://localhost:3003/generos/1
+
+### Criar um novo gênero
+POST http://localhost:3003/generos
+Content-Type: application/json
+
+{
+  "nome": "Epopéia"
+}
+
+### Atualizar gênero
+PUT http://localhost:3003/generos/1
+Content-Type: application/json
+
+{
+  "nome": "Fantasia Épica"
+}
+
+### Deletar um gênero
+DELETE http://localhost:3003/generos/6
