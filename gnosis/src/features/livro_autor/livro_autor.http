@@ -1,0 +1,28 @@
+### Listar vinculos livro-autor
+GET http://localhost:3002/livro-autores
+
+### Buscar vinculo por ID composto
+GET http://localhost:3002/livro-autores/1-2
+
+### Filtrar vinculos por livro
+GET http://localhost:3002/livro-autores?id_livro=1
+
+### Filtrar vinculos por autor
+GET http://localhost:3002/livro-autores?id_autor=2
+
+### Criar vinculo livro-autor
+POST http://localhost:3002/livro-autores
+Content-Type: application/json
+
+{
+  "id_livro": 1,
+  "id_autor": 2
+}
+
+### Atualizar vinculo livro-autor
+PUT http://localhost:3002/livro-autores/1-2
+Content-Type: application/json
+
+{
+  "id_autor": 3
+}

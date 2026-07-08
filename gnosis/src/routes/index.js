@@ -14,6 +14,9 @@ import { LivroRepository } from "../features/livros/livro.repository.js";
 import { LivroService } from "../features/livros/livro.service.js";
 import { LivroController } from "../features/livros/livro.controller.js";
 import { LivroRoutes } from "../features/livros/livro.routes.js";
+import { LivroAutorController } from "../features/livro_autor/livro_autor.controller.js";
+import { LivroAutorRoutes } from "../features/livro_autor/livro_autor.routes.js";
+import { LivroAutorService } from "../features/livro_autor/livro_autor.service.js";
 
 export default async function routes(fastify) {
   fastify.get("/", async () => {
@@ -46,6 +49,17 @@ export default async function routes(fastify) {
       livroRoutes.register(instance);
     },
     { prefix: "/livros" }
+  );
+
+  const livroAutorService = new LivroAutorService();
+  const livroAutorController = new LivroAutorController(livroAutorService);
+  const livroAutorRoutes = new LivroAutorRoutes(livroAutorController);
+
+  fastify.register(
+    async (instance) => {
+      livroAutorRoutes.register(instance);
+    },
+    { prefix: "/livro-autores" }
   );
 
   const autorService = new AutorService();
