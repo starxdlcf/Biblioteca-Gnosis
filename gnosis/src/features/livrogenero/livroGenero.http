@@ -1,0 +1,17 @@
+### Listar todos os vínculos livro_genero
+GET http://localhost:3002/livrogenero
+
+### Buscar todos os gêneros vinculados ao livro de ID 1
+GET http://localhost:3002/livrogenero/1
+
+### Criar um novo vínculo (Exemplo: Vincular Livro 1 ao Gênero 2)
+POST http://localhost:3002/livrogenero
+Content-Type: application/json
+
+{
+  "id_livro": 1,
+  "id_genero": 2
+}
+
+### Remover um vínculo específico (Exemplo: Remover Gênero 2 do Livro 1)
+DELETE http://localhost:3002/livrogenero/1/2

@@ -1,11 +1,11 @@
 ### Listar carteirinhas
-GET http://localhost:3003/carteirinhas
+GET http://localhost:3002/carteirinhas
 
 ### Buscar uma carteirinha por ID
-GET http://localhost:3003/carteirinhas/1
+GET http://localhost:3002/carteirinhas/1
 
 ### Criar carteirinha
-POST http://localhost:3003/carteirinhas
+POST http://localhost:3002/carteirinhas
 Content-Type: application/json
 
 {
@@ -15,7 +15,7 @@ Content-Type: application/json
 }
 
 ### Atualizar carteirinha
-PUT http://localhost:3003/carteirinhas/1
+PUT http://localhost:3002/carteirinhas/1
 Content-Type: application/json
 
 {
@@ -23,4 +23,4 @@ Content-Type: application/json
 }
 
 ### Deletar carteirinha
-DELETE http://localhost:3003/carteirinhas/1
+DELETE http://localhost:3002/carteirinhas/1

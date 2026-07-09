@@ -1,3 +1,11 @@
+//Ryan, vou comentar p vc entender oq eu fiz quando ler, blz?
+//Primeiro, escreve isso no seu terminal: npm install @fastify/swagger @fastify/swagger-ui
+
+import swagger from '@fastify/swagger';
+import swaggerUi from '@fastify/swagger-ui';
+
+// aq são os imports que a gente fez normal
+
 import { CarteirinhaController } from "../features/carteirinhas/carteirinha.controller.js";
 import { CarteirinhaRoutes } from "../features/carteirinhas/carteirinha.routes.js";
 import { CarteirinhaService } from "../features/carteirinhas/carteirinha.service.js";
@@ -15,6 +23,12 @@ import { GeneroController } from "../features/generos/genero.controller.js";
 import { GeneroRoutes } from "../features/generos/genero.routes.js";
 import { GeneroService } from "../features/generos/genero.service.js";
 import { GeneroRepository } from "../features/generos/genero.repository.js";
+import { LivroGeneroController } from "../features/livrogenero/livroGenero.controller.js";
+import { LivroGeneroRoutes } from "../features/livrogenero/livroGenero.routes.js";
+import { LivroGeneroService } from "../features/livrogenero/livroGenero.service.js";
+import { LivroGeneroRepository} from "../features/livrogenero/livroGenero.repository.js";
+
+
 
 export default async function routes(fastify) {
   fastify.get("/", async () => {
@@ -24,6 +38,25 @@ export default async function routes(fastify) {
     };
   });
 
+
+  // Essa parte registra o Swagger
+  await fastify.register(swagger, {
+    openapi: {
+      info: {
+        title: 'Gnosis',
+        description: 'Documentação da API desenvolvida para o projeto da Biblioteca Gnosis - por Anna Luísa e Ryan Tomaz',
+        version: '1.0.0'
+      }
+    }
+  });
+
+  // Esse UI é a parte da interface da documentação, pq só com o swagger tem a documentação mas sem o visual. O UI é registrado aqui em baixo
+  await fastify.register(swaggerUi, {
+    routePrefix: '/docs',
+  });
+
+
+  // a partir daqui são as nossas rotas 
 
   const carteirinhaService = new CarteirinhaService();
   const carteirinhaController = new CarteirinhaController(carteirinhaService);
@@ -83,6 +116,20 @@ export default async function routes(fastify) {
     { prefix: "/generos"}
   );
 
+
+  const livrogeneroRepository = new LivroGeneroRepository();
+  const livrogeneroService = new LivroGeneroService(livrogeneroRepository);
+  const livrogeneroController = new LivroGeneroController(livrogeneroService);
+  const livrogeneroRoutes = new LivroGeneroRoutes(livrogeneroController);
+
+
+  fastify.register(
+    async (instance) => {
+      livrogeneroRoutes.register(instance);
+    },
+    { prefix: "/livrogenero"}
+  );
+  
 
 }
   
