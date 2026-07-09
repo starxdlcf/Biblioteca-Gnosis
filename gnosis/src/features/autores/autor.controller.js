@@ -5,13 +5,12 @@ export class AutorController extends BaseController {
     super(service);
   }
 
-  async delete(request, reply) {
+  async getAll(request, reply) {
     try {
-      const { id } = request.params;
-      await this.service.delete(id);
+      const data = await this.service.getAll(request.query);
       return reply.status(200).send({
         success: true,
-        message: "Registro deletado com sucesso",
+        data,
       });
     } catch (error) {
       const statusCode = error.statusCode || 500;

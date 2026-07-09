@@ -1,44 +1,38 @@
 import { AppError } from "../../errors/AppError.js";
 import { BaseService } from "../../base/base.service.js";
 import { AutorRepository } from "./autor.repository.js";
-import { LivroAutorRepository } from "../livro_autor/livro_autor.repository.js";
 
 const ALLOWED_FIELDS = new Set(["nome"]);
 
 export class AutorService extends BaseService {
-  constructor(repository = new AutorRepository(), livroAutorRepository = new LivroAutorRepository()) {
+  constructor(repository = new AutorRepository()) {
     super(repository);
-    this.livroAutorRepository = livroAutorRepository;
+  }
+
+  async getAll(filters = {}) {
+    try {
+      const nome = filters.nome === undefined ? "" : String(filters.nome).trim();
+
+      if (!nome) {
+        return super.getAll();
+      }
+
+      return await this.repository.findByNome(nome);
+    } catch (error) {
+      throw new AppError("Erro ao buscar registros", 500);
+    }
   }
 
   async create(data) {
-    if (!data || typeof data !== "object" || Array.isArray(data)) {
-      throw new AppError("Dados obrigatorios nao fornecidos", 400);
-    }
-
-    const payload = this.buildPayload(data);
-
-    if (!payload.nome) {
-      throw new AppError("Nome do autor e obrigatorio", 400);
-    }
+    this.validateBody(data, "Dados obrigatorios nao fornecidos");
+    const payload = this.buildPayload(data, true);
 
     return super.create(payload);
   }
 
   async update(id, data) {
-    if (!data || typeof data !== "object" || Array.isArray(data)) {
-      throw new AppError("Dados para atualizacao nao fornecidos", 400);
-    }
-
-    if (Object.keys(data).length === 0) {
-      throw new AppError("Dados para atualizacao nao fornecidos", 400);
-    }
-
-    const payload = this.buildPayload(data);
-
-    if (!payload.nome) {
-      throw new AppError("Nome do autor e obrigatorio", 400);
-    }
+    this.validateBody(data, "Dados para atualizacao nao fornecidos", true);
+    const payload = this.buildPayload(data, false);
 
     return super.update(id, payload);
   }
@@ -54,11 +48,11 @@ export class AutorService extends BaseService {
         throw new AppError("Registro nao encontrado", 404);
       }
 
-      const hasLinkedBooks = await this.livroAutorRepository.existsByAutor(id);
-      if (hasLinkedBooks) {
+      const livrosVinculados = await this.repository.countLivrosPorAutor(id);
+      if (livrosVinculados > 0) {
         throw new AppError(
-          "Não é possível excluir o autor, pois existem livros vinculados a ele.",
-          400
+          `Nao e possivel excluir o autor. Existem ${livrosVinculados} livro(s) vinculado(s) a ele.`,
+          409
         );
       }
 
@@ -69,22 +63,43 @@ export class AutorService extends BaseService {
     }
   }
 
-  buildPayload(data) {
+  validateBody(data, message, requireNotEmpty = false) {
+    if (!data) {
+      throw new AppError(message, 400);
+    }
+
+    if (typeof data !== "object" || Array.isArray(data)) {
+      throw new AppError("O corpo da requisicao deve ser um objeto", 400);
+    }
+
+    if (requireNotEmpty && Object.keys(data).length === 0) {
+      throw new AppError(message, 400);
+    }
+  }
+
+  buildPayload(data, requireNome) {
+    for (const field of Object.keys(data)) {
+      if (!ALLOWED_FIELDS.has(field)) {
+        throw new AppError(`Campo nao permitido: ${field}`, 400);
+      }
+    }
+
     const payload = {};
 
-    for (const [key, value] of Object.entries(data)) {
-      if (!ALLOWED_FIELDS.has(key)) {
-        throw new AppError(`Campo nao permitido: ${key}`, 400);
+    if (Object.prototype.hasOwnProperty.call(data, "nome")) {
+      const nome = data.nome === null || data.nome === undefined
+        ? ""
+        : data.nome.toString().trim();
+
+      if (!nome) {
+        throw new AppError("Nome do autor e obrigatorio", 400);
       }
 
-      if (key === "nome") {
-        const nome = value?.toString().trim();
-        if (!nome) {
-          throw new AppError("Nome do autor e obrigatorio", 400);
-        }
+      payload.nome = nome;
+    }
 
-        payload.nome = nome;
-      }
+    if (requireNome && !payload.nome) {
+      throw new AppError("Nome do autor e obrigatorio", 400);
     }
 
     return payload;

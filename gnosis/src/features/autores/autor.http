@@ -1,10 +1,22 @@
-### Listar autores
+### Listar todos os autores
 GET http://localhost:3002/autores
+
+### Buscar autores por nome completo
+GET http://localhost:3002/autores?nome=J.R.R%20Tolkien
+
+### Buscar autores por parte do nome
+GET http://localhost:3002/autores?nome=mach
+
+### Buscar autores utilizando apenas um sobrenome
+GET http://localhost:3002/autores?nome=Assis
+
+### Buscar autores sem resultados
+GET http://localhost:3002/autores?nome=AutorInexistenteXYZ
 
 ### Buscar um autor por ID
 GET http://localhost:3002/autores/1
 
-### Criar autor
+### Criar um novo autor
 POST http://localhost:3002/autores
 Content-Type: application/json
 
@@ -12,7 +24,7 @@ Content-Type: application/json
   "nome": "Machado de Assis"
 }
 
-### Atualizar autor
+### Atualizar um autor
 PUT http://localhost:3002/autores/1
 Content-Type: application/json
 
@@ -20,5 +32,5 @@ Content-Type: application/json
   "nome": "Joaquim Maria Machado de Assis"
 }
 
-### Deletar autor
+### Deletar um autor
 DELETE http://localhost:3002/autores/1
