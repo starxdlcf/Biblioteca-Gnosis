@@ -1,17 +1,17 @@
-### Listar vinculos livro-autor
-GET http://localhost:3002/livro-autores
+### Listar todos os vinculos livro_autor
+GET http://localhost:3002/livroautor
 
-### Buscar vinculo por ID composto
-GET http://localhost:3002/livro-autores/1-2
+### Buscar autores vinculados ao livro de ID 1
+GET http://localhost:3002/livroautor/1
 
-### Filtrar vinculos por livro
-GET http://localhost:3002/livro-autores?id_livro=1
+### Buscar livros vinculados ao autor de ID 2
+GET http://localhost:3002/livroautor/autor/2
 
-### Filtrar vinculos por autor
-GET http://localhost:3002/livro-autores?id_autor=2
+### Buscar vinculo especifico entre livro 1 e autor 2
+GET http://localhost:3002/livroautor/1/2
 
-### Criar vinculo livro-autor
-POST http://localhost:3002/livro-autores
+### Criar vinculo entre livro 1 e autor 2
+POST http://localhost:3002/livroautor
 Content-Type: application/json
 
 {
@@ -19,13 +19,5 @@ Content-Type: application/json
   "id_autor": 2
 }
 
-### Atualizar vinculo livro-autor
-PUT http://localhost:3002/livro-autores/1-2
-Content-Type: application/json
-
-{
-  "id_autor": 3
-}
-
-### Deletar vinculo livro-autor
-DELETE http://localhost:3002/livro-autores/1-2
+### Deletar vinculo entre livro 1 e autor 2
+DELETE http://localhost:3002/livroautor/1/2

@@ -5,9 +5,10 @@ export class LivroAutorController extends BaseController {
     super(service);
   }
 
-  async getAll(request, reply) {
+  async getById(request, reply) {
     try {
-      const data = await this.service.getAll(request.query);
+      const { idLivro } = request.params;
+      const data = await this.service.getById(idLivro);
       return reply.status(200).send({
         success: true,
         data,
@@ -21,19 +22,50 @@ export class LivroAutorController extends BaseController {
     }
   }
 
-  async delete(request, reply) {
+  async getByAuthor(request, reply) {
     try {
-      const { id } = request.params;
-      await this.service.delete(id);
+      const { idAutor } = request.params;
+      const data = await this.service.getByAuthor(idAutor);
       return reply.status(200).send({
         success: true,
-        message: "Registro deletado com sucesso",
+        data,
       });
     } catch (error) {
       const statusCode = error.statusCode || 500;
       return reply.status(statusCode).send({
         success: false,
         message: error.message,
+      });
+    }
+  }
+
+  async getRelation(request, reply) {
+    try {
+      const { idLivro, idAutor } = request.params;
+      const data = await this.service.getRelation(idLivro, idAutor);
+      return reply.status(200).send({
+        success: true,
+        data,
+      });
+    } catch (error) {
+      const statusCode = error.statusCode || 500;
+      return reply.status(statusCode).send({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
+
+  async deleteRelation(request, reply) {
+    try {
+      const { idLivro, idAutor } = request.params;
+      const result = await this.service.deleteRelation(idLivro, idAutor);
+      return reply.status(200).send({ success: true, data: result });
+    } catch (error) {
+      const statusCode = error.statusCode || 500;
+      return reply.status(statusCode).send({
+        success: false,
+        message: error.message || "Erro interno no servidor",
       });
     }
   }
