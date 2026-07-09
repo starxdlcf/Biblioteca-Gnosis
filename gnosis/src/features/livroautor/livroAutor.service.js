@@ -1,6 +1,6 @@
 import { AppError } from "../../errors/AppError.js";
 import { BaseService } from "../../base/base.service.js";
-import { LivroAutorRepository } from "./livro_autor.repository.js";
+import { LivroAutorRepository } from "./livroAutor.repository.js";
 
 const ALLOWED_FIELDS = new Set(["id_livro", "id_autor"]);
 const ALLOWED_FILTERS = new Set(["id_livro", "id_autor"]);

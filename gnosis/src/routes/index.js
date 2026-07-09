@@ -22,9 +22,10 @@ import { LivroRepository } from "../features/livros/livro.repository.js";
 import { LivroService } from "../features/livros/livro.service.js";
 import { LivroController } from "../features/livros/livro.controller.js";
 import { LivroRoutes } from "../features/livros/livro.routes.js";
-import { LivroAutorController } from "../features/livro_autor/livro_autor.controller.js";
-import { LivroAutorRoutes } from "../features/livro_autor/livro_autor.routes.js";
-import { LivroAutorService } from "../features/livro_autor/livro_autor.service.js";
+import { LivroAutorController } from "../features/livroautor/livroAutor.controller.js";
+import { LivroAutorRoutes } from "../features/livroautor/livroAutor.routes.js";
+import { LivroAutorService } from "../features/livroautor/livroAutor.service.js";
+import { LivroAutorRepository } from "../features/livroautor/livroAutor.repository.js";
 import { GeneroController } from "../features/generos/genero.controller.js";
 import { GeneroRoutes } from "../features/generos/genero.routes.js";
 import { GeneroService } from "../features/generos/genero.service.js";
@@ -85,15 +86,16 @@ export default async function routes(fastify) {
     { prefix: "/livros" }
   );
 
-  const livroAutorService = new LivroAutorService();
-  const livroAutorController = new LivroAutorController(livroAutorService);
-  const livroAutorRoutes = new LivroAutorRoutes(livroAutorController);
+  const livroautorRepository = new LivroAutorRepository();
+  const livroautorService = new LivroAutorService(livroautorRepository);
+  const livroautorController = new LivroAutorController(livroautorService);
+  const livroautorRoutes = new LivroAutorRoutes(livroautorController);
 
   fastify.register(
     async (instance) => {
-      livroAutorRoutes.register(instance);
+      livroautorRoutes.register(instance);
     },
-    { prefix: "/livro-autores" }
+    { prefix: "/livroautor" }
   );
 
   const autorService = new AutorService();
