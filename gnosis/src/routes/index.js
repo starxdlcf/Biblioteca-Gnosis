@@ -15,10 +15,17 @@ import { EmprestimoService } from "../features/emprestimos/emprestimo.service.js
 import { MultaController } from "../features/multas/multa.controller.js";
 import { MultaRoutes } from "../features/multas/multa.routes.js";
 import { MultaService } from "../features/multas/multa.service.js";
+import { AutorController } from "../features/autores/autor.controller.js";
+import { AutorRoutes } from "../features/autores/autor.routes.js";
+import { AutorService } from "../features/autores/autor.service.js";
 import { LivroRepository } from "../features/livros/livro.repository.js";
 import { LivroService } from "../features/livros/livro.service.js";
 import { LivroController } from "../features/livros/livro.controller.js";
 import { LivroRoutes } from "../features/livros/livro.routes.js";
+import { LivroAutorController } from "../features/livroautor/livroAutor.controller.js";
+import { LivroAutorRoutes } from "../features/livroautor/livroAutor.routes.js";
+import { LivroAutorService } from "../features/livroautor/livroAutor.service.js";
+import { LivroAutorRepository } from "../features/livroautor/livroAutor.repository.js";
 import { GeneroController } from "../features/generos/genero.controller.js";
 import { GeneroRoutes } from "../features/generos/genero.routes.js";
 import { GeneroService } from "../features/generos/genero.service.js";
@@ -27,8 +34,6 @@ import { LivroGeneroController } from "../features/livrogenero/livroGenero.contr
 import { LivroGeneroRoutes } from "../features/livrogenero/livroGenero.routes.js";
 import { LivroGeneroService } from "../features/livrogenero/livroGenero.service.js";
 import { LivroGeneroRepository} from "../features/livrogenero/livroGenero.repository.js";
-
-
 
 export default async function routes(fastify) {
   fastify.get("/", async () => {
@@ -80,6 +85,30 @@ export default async function routes(fastify) {
     },
     { prefix: "/livros" }
   );
+
+  const livroautorRepository = new LivroAutorRepository();
+  const livroautorService = new LivroAutorService(livroautorRepository);
+  const livroautorController = new LivroAutorController(livroautorService);
+  const livroautorRoutes = new LivroAutorRoutes(livroautorController);
+
+  fastify.register(
+    async (instance) => {
+      livroautorRoutes.register(instance);
+    },
+    { prefix: "/livroautor" }
+  );
+
+  const autorService = new AutorService();
+  const autorController = new AutorController(autorService);
+  const autorRoutes = new AutorRoutes(autorController);
+
+  fastify.register(
+    async (instance) => {
+      autorRoutes.register(instance);
+    },
+    { prefix: "/autores" }
+  );
+
 
   const emprestimoService = new EmprestimoService();
   const emprestimoController = new EmprestimoController(emprestimoService);
