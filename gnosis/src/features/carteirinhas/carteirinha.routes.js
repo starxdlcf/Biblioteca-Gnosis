@@ -1,26 +1,24 @@
 import { BaseRoutes } from "../../base/base.routes.js";
 
 export class CarteirinhaRoutes extends BaseRoutes {
-  register(fastify) {
-    fastify.get("/", async (request, reply) =>
-      this.controller.getAll(request, reply)
-    );
-
-    fastify.get("/:id", async (request, reply) =>
-      this.controller.getById(request, reply)
-    );
-
-    fastify.post("/", async (request, reply) =>
-      this.controller.create(request, reply)
-    );
-
-    fastify.put("/:id", async (request, reply) =>
-      this.controller.update(request, reply)
-    );
-
-    fastify.delete("/:id", async (request, reply) =>
-      this.controller.delete(request, reply)
-    );
+  constructor(controller) {
+    super(controller, {
+      tagName: "Carteirinhas",
+      postBody: {
+        type: "object",
+        required: ["id_carteirinha"], // Ajuste conforme seu banco
+        properties: {
+          id_usuario: { type: "number", description: "ID do usuário associado" },
+          data_validade: { type: "string", format: "date", description: "Validade (YYYY-MM-DD)" }
+        }
+      },
+      putBody: {
+        type: "object",
+        properties: {
+          data_validade: { type: "string", format: "date" }
+        }
+      }
+    });
   }
 }
 

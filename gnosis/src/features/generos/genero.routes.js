@@ -1,26 +1,23 @@
 import { BaseRoutes } from "../../base/base.routes.js";
 
 export class GeneroRoutes extends BaseRoutes {
-  register(fastify) {
-    fastify.get("/", async (request, reply) =>
-      this.controller.getAll(request, reply)
-    );
-
-    fastify.get("/:id", async (request, reply) =>
-      this.controller.getById(request, reply)
-    );
-
-    fastify.post("/", async (request, reply) =>
-      this.controller.create(request, reply)
-    );
-
-    fastify.put("/:id", async (request, reply) =>
-      this.controller.update(request, reply)
-    );
-
-    fastify.delete("/:id", async (request, reply) =>
-      this.controller.delete(request, reply)
-    );
+  constructor(controller) {
+    super(controller, {
+      tagName: "Gêneros", // nome q aparece na interface do Swagger
+      postBody: {
+        type: "object",
+        required: ["nome"],
+        properties: {
+          nome: { type: "string", description: "Nome do gênero literário" }
+        }
+      },
+      putBody: {
+        type: "object",
+        properties: {
+          nome: { type: "string", description: "Novo nome do gênero literário" }
+        }
+      }
+    });
   }
 }
 

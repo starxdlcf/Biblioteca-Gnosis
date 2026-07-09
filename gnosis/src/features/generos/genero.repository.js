@@ -1,13 +1,9 @@
 import { pool } from "../../config/database.js";
 
-/**
- * BaseRepository - Responsável apenas por operações SQL e acesso aos dados
- * Não contém lógica de negócio ou validações
- */
-export class BaseRepository {
-  constructor(tableName, idField = "id") {
-    this.tableName = tableName;
-    this.idField = idField;
+export class GeneroRepository {
+  constructor() {
+    this.tableName = "generos";
+    this.idField = "id_genero";
     this.pool = pool;
   }
 
@@ -54,5 +50,14 @@ export class BaseRepository {
       [id]
     );
     return result.rows[0];
+  }
+
+  async countLivrosPorGenero(id) {
+    const result = await this.pool.query(
+      `SELECT COUNT(*) FROM livro_genero WHERE id_genero = $1`,
+      [id]
+    );
+    //parseInt serve pra converter string p numero pq o count retorna string
+    return parseInt(result.rows[0].count, 10); 
   }
 }

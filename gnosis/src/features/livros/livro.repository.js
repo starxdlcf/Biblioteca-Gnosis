@@ -63,8 +63,11 @@ export class LivroRepository {
   async findByAuthor(author) {
     const search = `%${author}%`;
     const result = await this.pool.query(
-      `SELECT * FROM ${this.tableName} WHERE autor ILIKE $1`,
-      // o ILIKE é pra ignorar maiúscula e minúscula e o % serve pra buscar qualquer parte do nome do autor ou titulo ou enfim, então se a pessoa buscar Machado, encontra o machado de assis e por aí vai (comentei pq n sei se vc sabe, Ryan, dai te poupa pesquisar) - Anna
+      `SELECT l.* FROM ${this.tableName} l
+       JOIN livro_autor la ON l.id_livro = la.id_livro
+       JOIN autores a ON a.id_autor = la.id_autor
+       WHERE a.nome ILIKE $1`,
+       // o ILIKE é pra ignorar maiúscula e minúscula e o % serve pra buscar qualquer parte do nome do autor ou titulo ou enfim, então se a pessoa buscar Machado, encontra o machado de assis e por aí vai (comentei pq n sei se vc sabe, Ryan, dai te poupa pesquisar) - Anna
       [search]
     );
     return result.rows;
@@ -79,11 +82,11 @@ export class LivroRepository {
     return result.rows;
   }
 
+  //deixei a busca por codigo exata
   async findByISBN(isbn) {
-    const search = `%${isbn}%`;
     const result = await this.pool.query(
-      `SELECT * FROM ${this.tableName} WHERE isbn ILIKE $1`,
-      [search]
+      `SELECT * FROM ${this.tableName} WHERE isbn = $1`,
+      [isbn]
     );
     return result.rows[0];
   }
