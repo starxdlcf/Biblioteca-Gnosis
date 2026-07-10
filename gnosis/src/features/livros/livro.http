@@ -1,0 +1,26 @@
+### Listar todos os livros
+GET http://localhost:3002/livros
+
+### Buscar um livro por ID
+GET http://localhost:3002/livros/1
+
+### Criar um novo livro
+POST http://localhost:3002/livros
+Content-Type: application/json
+
+{
+  "titulo": "Código Limpo",
+  "isbn": "9788575222485"
+}
+
+### Atualizar livro (Apenas título e/ou isbn são aceitos no seu repository)
+PUT http://localhost:3002/livros/1
+Content-Type: application/json
+
+{
+  "titulo": "Código Limpo - Edição Revisada",
+  "isbn": "9788575222485"
+}
+
+### Deletar um livro
+DELETE http://localhost:3002/livros/1

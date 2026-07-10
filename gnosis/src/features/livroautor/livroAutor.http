@@ -1,0 +1,23 @@
+### Listar todos os vinculos livro_autor
+GET http://localhost:3002/livroautor
+
+### Buscar autores vinculados ao livro de ID 1
+GET http://localhost:3002/livroautor/1
+
+### Buscar livros vinculados ao autor de ID 2
+GET http://localhost:3002/livroautor/autor/2
+
+### Buscar vinculo especifico entre livro 1 e autor 2
+GET http://localhost:3002/livroautor/1/2
+
+### Criar vinculo entre livro 1 e autor 2
+POST http://localhost:3002/livroautor
+Content-Type: application/json
+
+{
+  "id_livro": 1,
+  "id_autor": 2
+}
+
+### Deletar vinculo entre livro 1 e autor 2
+DELETE http://localhost:3002/livroautor/1/2
